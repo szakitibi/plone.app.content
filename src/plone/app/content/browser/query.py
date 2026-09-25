@@ -1,9 +1,11 @@
 from plone.app.querystring.interfaces import IQuerystringRegistryReader
 from plone.registry.interfaces import IRegistry
-from Products.Five import BrowserView
+from Products.CMFCore.interfaces import IContentish
+from zope.component import getMultiAdapter
 from zope.component import getUtility
 
 import json
+
 
 
 class QueryStringIndexOptions(BrowserView):
