@@ -16,6 +16,7 @@ from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
 from Products.Five import BrowserView
 from Products.PortalTransforms.transforms.safe_html import SafeHTML
+from urllib.parse import quote
 from zope.browsermenu.interfaces import IBrowserMenu
 from zope.component import getMultiAdapter
 from zope.component import getUtilitiesFor
@@ -250,12 +251,13 @@ class FolderContentsView(BrowserView):
         base_vocabulary = "%s/@@getVocabulary?name=" % base_url
         site_path = site.getPhysicalPath()
         context_path = self.context.getPhysicalPath()
+        base_path = "/" + "/".join(context_path[len(site_path) :])
         columns = self.get_columns()
         options = {
             "vocabularyUrl": "%splone.app.vocabularies.Catalog" % (base_vocabulary),
             "urlStructure": {"base": base_url, "appended": "/folder_contents"},
             "moveUrl": "%s{path}/fc-itemOrder" % base_url,
-            "indexOptionsUrl": "%s/@@qsOptions" % base_url,
+            "indexOptionsUrl": "%s/@@qsOptions?path=%s" % (base_url, quote(base_path)),
             "contextInfoUrl": "%s{path}/@@fc-contextInfo" % base_url,
             "setDefaultPageUrl": "%s{path}/@@fc-setDefaultPage" % base_url,
             "defaultPageTypes": self.default_page_types(),
@@ -275,7 +277,7 @@ class FolderContentsView(BrowserView):
                 "properties": self.get_indexes(),
                 "url": "%s{path}/@@fc-rearrange" % base_url,
             },
-            "basePath": "/" + "/".join(context_path[len(site_path) :]),
+            "basePath": base_path,
             "upload": {
                 "relativePath": "@@fileUpload",
                 "baseUrl": base_url,
